@@ -29,7 +29,7 @@ def evaluate(num_episodes, render):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Run tests.')
-    parser.add_argument('--render', action='store_true')
+    parser.add_argument('render', action='store_true')
     args = parser.parse_args()
     render = args.render
 

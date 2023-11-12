@@ -179,7 +179,7 @@
         "kind": 2,
         "importPath": "sarsa_lambda.student",
         "description": "sarsa_lambda.student",
-        "peekOfCode": "def epsilon_greedy_action(env, Q, state, epsilon):\n    # TODO choose the action with epsilon-greedy strategy\n    action = ...\n    return action\ndef sarsa_lambda(env, alpha=0.2, gamma=0.99, lambda_= 0.9, initial_epsilon=1.0, n_episodes=10000 ):\n    ####### Hyperparameters\n    # alpha = learning rate\n    # gamma = discount factor\n    # lambda_ = elegibility trace decay\n    # initial_epsilon = initial epsilon value",
+        "peekOfCode": "def epsilon_greedy_action(env, Q, state, epsilon):\n    if np.random.random() < epsilon:\n        # choose a random action: exploration\n        action = env.action_space.sample()\n    else:\n        # choose the action with the highest Q value for the current state\n        # exploitation\n        action = np.argmax(Q[state, :])\n    return action\ndef sarsa_lambda(env, alpha=0.2, gamma=0.99, lambda_= 0.9, initial_epsilon=1.0, n_episodes=10000 ):",
         "detail": "sarsa_lambda.student",
         "documentation": {}
     },
