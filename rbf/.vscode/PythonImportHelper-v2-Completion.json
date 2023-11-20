@@ -35,14 +35,6 @@
         "documentation": {}
     },
     {
-        "label": "sarsa_lambda",
-        "importPath": "student",
-        "description": "student",
-        "isExtraImport": true,
-        "detail": "student",
-        "documentation": {}
-    },
-    {
         "label": "gymnasium",
         "kind": 6,
         "isExtraImport": true,
@@ -104,100 +96,57 @@
         "documentation": {}
     },
     {
-        "label": "mean",
-        "importPath": "statistics",
-        "description": "statistics",
-        "isExtraImport": true,
-        "detail": "statistics",
-        "documentation": {}
-    },
-    {
-        "label": "tqdm",
-        "importPath": "tqdm",
-        "description": "tqdm",
-        "isExtraImport": true,
-        "detail": "tqdm",
-        "documentation": {}
-    },
-    {
         "label": "evaluate",
         "kind": 2,
-        "importPath": "rbf.main",
-        "description": "rbf.main",
+        "importPath": "main",
+        "description": "main",
         "peekOfCode": "def evaluate(fname, env=None, n_episodes=10, max_steps_per_episode=200, render=False):\n    env = gym.make('MountainCar-v0')\n    if render:\n        env = gym.make('MountainCar-v0', render_mode='human')\n    agent = TDLambda_LVFA.load(fname)\n    rewards = []\n    for episode in range(n_episodes):\n        total_reward = 0\n        done = False\n        s, _ = env.reset()",
-        "detail": "rbf.main",
+        "detail": "main",
         "documentation": {}
     },
     {
         "label": "train",
         "kind": 2,
-        "importPath": "rbf.main",
-        "description": "rbf.main",
+        "importPath": "main",
+        "description": "main",
         "peekOfCode": "def train(fname):\n    env = gym.make('MountainCar-v0')\n    agent = TDLambda_LVFA(env)\n    agent.train()\n    agent.save(fname)\ndef main():\n    parser = argparse.ArgumentParser(description='Run training and evaluation')\n    parser.add_argument('render', action='store_true')\n    parser.add_argument('-t', '--train', default=None)\n    parser.add_argument('-e', '--evaluate', default=None)",
-        "detail": "rbf.main",
+        "detail": "main",
         "documentation": {}
     },
     {
         "label": "main",
         "kind": 2,
-        "importPath": "rbf.main",
-        "description": "rbf.main",
+        "importPath": "main",
+        "description": "main",
         "peekOfCode": "def main():\n    parser = argparse.ArgumentParser(description='Run training and evaluation')\n    parser.add_argument('render', action='store_true')\n    parser.add_argument('-t', '--train', default=None)\n    parser.add_argument('-e', '--evaluate', default=None)\n    args = parser.parse_args()\n    if args.train is not None:\n        train(args.train)\n    if args.evaluate:\n        evaluate(args.evaluate, render=args.render)",
-        "detail": "rbf.main",
+        "detail": "main",
         "documentation": {}
     },
     {
         "label": "VanillaFeatureEncoder",
         "kind": 6,
-        "importPath": "rbf.student",
-        "description": "rbf.student",
+        "importPath": "student",
+        "description": "student",
         "peekOfCode": "class VanillaFeatureEncoder:\n    def __init__(self, env):\n        self.env = env\n    def encode(self, state):\n        return state\n    @property\n    def size(self): \n        return self.env.observation_space.shape[0]\n# This code initializes the RBF encoder using the environment\n# passed into the constructor.",
-        "detail": "rbf.student",
+        "detail": "student",
         "documentation": {}
     },
     {
         "label": "RBFFeatureEncoder",
         "kind": 6,
-        "importPath": "rbf.student",
-        "description": "rbf.student",
+        "importPath": "student",
+        "description": "student",
         "peekOfCode": "class RBFFeatureEncoder:\n    def __init__(self, env): # modify\n        self.env = env\n        self.encoder = RBFSampler(gamma = 1, n_components=100)\n        observation_examples = np.array([env.observation_space.sample() for x in range(100)])\n        self.scaler = sklearn.preprocessing.StandardScaler()\n        self.scaler.fit(observation_examples)\n        # Initialize RBF samplers with different parameters\n        self.rbf_space = [\n            (\"rbf1\", RBFSampler(gamma=5.0, n_components=100)),",
-        "detail": "rbf.student",
+        "detail": "student",
         "documentation": {}
     },
     {
         "label": "TDLambda_LVFA",
         "kind": 6,
-        "importPath": "rbf.student",
-        "description": "rbf.student",
+        "importPath": "student",
+        "description": "student",
         "peekOfCode": "class TDLambda_LVFA:\n    def __init__(self, env, feature_encoder_cls=RBFFeatureEncoder, alpha=0.01, alpha_decay=1, \n                 gamma=0.9999, epsilon=0.3, epsilon_decay=0.995, final_epsilon=0.05, lambda_=0.9): # modify if you want (e.g. for forward view)\n        self.env = env\n        self.feature_encoder = feature_encoder_cls(env)\n        self.shape = (self.env.action_space.n, self.feature_encoder.size)\n        self.weights = np.random.random(self.shape)*0.01 #weights is a np array of size (n_actions, n_features) 3x100\n        self.traces = np.zeros(self.shape) #trace is a np array of size (n_actions, n_features) 3x100\n        self.alpha = alpha\n        self.alpha_decay = alpha_decay",
-        "detail": "rbf.student",
-        "documentation": {}
-    },
-    {
-        "label": "evaluate",
-        "kind": 2,
-        "importPath": "sarsa_lambda.main",
-        "description": "sarsa_lambda.main",
-        "peekOfCode": "def evaluate(num_episodes, render):\n    env_name = \"Taxi-v3\"\n    env = gym.make(env_name, render_mode=\"ansi\")\n    env_render = gym.make(env_name, render_mode=\"human\" if render else \"ansi\")\n    Q = sarsa_lambda(env)\n    rewards = []\n    for ep in range(num_episodes):\n        tot_reward = 0\n        done = False\n        s, _ = env_render.reset()",
-        "detail": "sarsa_lambda.main",
-        "documentation": {}
-    },
-    {
-        "label": "epsilon_greedy_action",
-        "kind": 2,
-        "importPath": "sarsa_lambda.student",
-        "description": "sarsa_lambda.student",
-        "peekOfCode": "def epsilon_greedy_action(env, Q, state, epsilon):\n    if np.random.random() < epsilon:\n        # choose a random action: exploration\n        action = env.action_space.sample()\n    else:\n        # choose the action with the highest Q value for the current state\n        # exploitation\n        action = np.argmax(Q[state, :])\n    return action\ndef sarsa_lambda(env, alpha=0.2, gamma=0.99, lambda_= 0.9, initial_epsilon=1.0, n_episodes=10000 ):",
-        "detail": "sarsa_lambda.student",
-        "documentation": {}
-    },
-    {
-        "label": "sarsa_lambda",
-        "kind": 2,
-        "importPath": "sarsa_lambda.student",
-        "description": "sarsa_lambda.student",
-        "peekOfCode": "def sarsa_lambda(env, alpha=0.2, gamma=0.99, lambda_= 0.9, initial_epsilon=1.0, n_episodes=10000 ):\n    ####### Hyperparameters\n    # alpha = learning rate\n    # gamma = discount factor\n    # lambda_ = elegibility trace decay\n    # initial_epsilon = initial epsilon value\n    # n_episodes = number of episodes\n    ############# define Q table and initialize to zero\n    Q = np.zeros((env.observation_space.n, env.action_space.n))\n    E = np.zeros((env.observation_space.n, env.action_space.n))",
-        "detail": "sarsa_lambda.student",
+        "detail": "student",
         "documentation": {}
     }
 ]

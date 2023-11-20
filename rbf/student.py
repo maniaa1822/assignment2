@@ -8,7 +8,9 @@ import sklearn
 import sklearn.pipeline
 import sklearn.preprocessing
 from sklearn.kernel_approximation import RBFSampler
+from sklearn.pipeline import FeatureUnion
 import pickle
+
 
 
 class VanillaFeatureEncoder:
@@ -30,27 +32,41 @@ class VanillaFeatureEncoder:
 class RBFFeatureEncoder:
     def __init__(self, env): # modify
         self.env = env
-        # TODO init rbf encoder
+        self.encoder = RBFSampler(gamma = 1, n_components=100)
+        observation_examples = np.array([env.observation_space.sample() for x in range(100)])
+        self.scaler = sklearn.preprocessing.StandardScaler()
+        self.scaler.fit(observation_examples)
+
+        # Initialize RBF samplers with different parameters
+        self.rbf_space = [
+            ("rbf1", RBFSampler(gamma=5.0, n_components=100)),
+            ("rbf2", RBFSampler(gamma=2.0, n_components=100)),
+            ("rbf3", RBFSampler(gamma=1.0, n_components=100)),
+            ("rbf4", RBFSampler(gamma=0.5, n_components=100))
+        ]
+        self.design_matrix = FeatureUnion(self.rbf_space)
+        self.design_matrix.fit(self.scaler.transform(observation_examples))
         
-        ...
+    def encode(self, state):
+        scaled = self.scaler.transform(state.reshape(1, -1))
+        state_features = self.design_matrix.transform(scaled)
+        return state_features
 
-    def encode(self, state): # modify
-        # TODO use the rbf encoder to return the features
-        return ...
-
+        
     @property
     def size(self): # modify
         # TODO return the number of features
-        return ...
-
+        size = self.encoder.n_components*self.rbf_space.__len__()
+        return size
+    
 class TDLambda_LVFA:
     def __init__(self, env, feature_encoder_cls=RBFFeatureEncoder, alpha=0.01, alpha_decay=1, 
-                 gamma=0.9999, epsilon=0.3, epsilon_decay=0.995, final_epsilon=0.2, lambda_=0.9): # modify if you want (e.g. for forward view)
+                 gamma=0.9999, epsilon=0.3, epsilon_decay=0.995, final_epsilon=0.05, lambda_=0.9): # modify if you want (e.g. for forward view)
         self.env = env
         self.feature_encoder = feature_encoder_cls(env)
         self.shape = (self.env.action_space.n, self.feature_encoder.size)
-        self.weights = np.random.random(self.shape)
-        self.traces = np.zeros(self.shape)
+        self.weights = np.random.random(self.shape)*0.01 #weights is a np array of size (n_actions, n_features) 3x100
+        self.traces = np.zeros(self.shape) #trace is a np array of size (n_actions, n_features) 3x100
         self.alpha = alpha
         self.alpha_decay = alpha_decay
         self.gamma = gamma
@@ -58,20 +74,53 @@ class TDLambda_LVFA:
         self.epsilon_decay = epsilon_decay
         self.final_epsilon = final_epsilon
         self.lambda_ = lambda_
+        self.episode = []
         
     def Q(self, feats):
-        feats = feats.reshape(-1,1)
+        feats = feats.reshape(-1, 1)
         return self.weights@feats
     
-    def update_transition(self, s, action, s_prime, reward, done): # modify
-        s_feats = self.feature_encoder.encode(s)
-        s_prime_feats = self.feature_encoder.encode(s_prime)
-        # TODO update the weights
-        self.weights[action] += ...
+    def update_transition_backwards(self, s, a, s_prime, reward, done): # modify
+        s_feats = self.feature_encoder.encode(s) #array of size (n_features, 1) 100x1
+        s_prime_feats = self.feature_encoder.encode(s_prime) #array of size (n_features, 1) 100x1
+        # TODO  update the weights for the current state
+        #calculate delta td error
+        delta = reward + self.gamma*self.Q(s_prime_feats).max() - self.Q(s_feats)[a]
+        #decay traces
+        self.traces = self.gamma*self.lambda_*self.traces
+        #accumulate traces
+        self.traces[a] = self.traces[a] + s_feats
+        #substiute traces
+        #self.traces[a] = s_feats
+        self.weights[a] += self.alpha*delta*self.traces[a]
+         
+    
+    
+    
+    def update_transition_forwards(self, s, action, s_prime, reward, done): # modify
+        s_feats = self.feature_encoder.encode(s) #array of size (n_features, 1) 100x1
+        s_prime_feats = self.feature_encoder.encode(s_prime) #array of size (n_features, 1) 100x1
+        self.episode.append((s_feats, action, reward,))
         
+        if done:
+            T = len(self.episode)
+            G = np.zeros(T)
+            for t in reversed(range(T)):
+                _,_, reward_t = self.episode[t]
+                G[t] = reward_t + (self.gamma*G[t+1] if t+1 < T else 0)
+                
+            for t in range(T):
+                s_feats_t,action_t = self.episode[t]
+                delta = G[t] - self.Q(s_feats_t)[action_t]
+                self.weights[action_t] += self.alpha*delta*s_feats_t
+                
+            self.episode = []
+        
+                    
     def update_alpha_epsilon(self): # do not touch
         self.epsilon = max(self.final_epsilon, self.epsilon*self.epsilon_decay)
         self.alpha = self.alpha*self.alpha_decay
+
         
     def policy(self, state): # do not touch
         state_feats = self.feature_encoder.encode(state)
@@ -92,15 +141,16 @@ class TDLambda_LVFA:
             self.traces = np.zeros(self.shape)
             for i in range(max_steps_per_episode):
                 
-                action = self.epsilon_greedy(s)
-                s_prime, reward, done, _, _ = self.env.step(action)
-                self.update_transition(s, action, s_prime, reward, done)
+                action = self.epsilon_greedy(s) #choose action using epsilon greedy policy
+                s_prime, reward, done, _, _ = self.env.step(action) #take action
+                self.update_transition_backwards(s, action, s_prime, reward, done) #update the weights and traces
+                #self.update_transition_forwards(s, action, s_prime, reward, done)
                 
-                s = s_prime
+                s = s_prime #update the state
                 
                 if done: break
                 
-            self.update_alpha_epsilon()
+            self.update_alpha_epsilon() #update alpha and epsilon
 
             if episode % 20 == 0:
                 print(episode, self.evaluate(), self.epsilon, self.alpha)

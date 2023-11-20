@@ -21,7 +21,7 @@ def evaluate(fname, env=None, n_episodes=10, max_steps_per_episode=200, render=F
         for i in range(max_steps_per_episode):
             action = agent.policy(s)
             
-            s_prime, reward, term, trunc, _ = env.step(action)
+            s_prime, reward, term, trunc, _ = env.step(action) 
             done = term or trunc
             if render: env.render()
             total_reward += reward
@@ -31,7 +31,7 @@ def evaluate(fname, env=None, n_episodes=10, max_steps_per_episode=200, render=F
         rewards.append(total_reward)
         
     print('Mean Reward:', np.mean(rewards))
-
+    
 
 def train(fname):
     env = gym.make('MountainCar-v0')
