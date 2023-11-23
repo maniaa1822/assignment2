@@ -90,10 +90,10 @@ class TDLambda_LVFA:
         self.traces = self.gamma*self.lambda_*self.traces
         #accumulate traces
         self.traces[a] = self.traces[a] + s_feats
-        #substiute traces
-        #self.traces[a] = s_feats
+        #substitute traces
+        #self.traces[a] = s_feats  
+        #update weights
         self.weights[a] += self.alpha*delta*self.traces[a]
-         
     
     
     

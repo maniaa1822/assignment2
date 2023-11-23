@@ -14,7 +14,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true
-            "args": ["-t model.pkl" ,"-e "]
+            "args": ["-t model.pkl" ,"-e model.pkl "]
             "purpose": ["debug-in-terminal"]
         }
     ]
