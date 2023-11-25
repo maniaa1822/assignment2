@@ -102,12 +102,12 @@ where \( \delta_k = R_{k+1} - V_k(S_k) \) is the TD error at time step \(k\). Th
 %and explain why the state space is discrete and why the action space is discrete.
 The goal of the agent in the Taxi environment is to pick up the passenger at one location and drop him off at another location.
 The agent can move in 4 directions (north, south, east, west) so the action space in discret,
-and can pick up and drop off the passenger at the correct location.
+and must pick up and drop off the passenger at the correct location.
 The state space also is discrete 
 as it is composed of a finite number of states (500).
 
 The RL algorithm used to solve the Taxi environment is Sarsa-$\lambda$,
-an on-policy TD control algorithm that combines the ideas of Monte Carlo updates and TD updates,
+an on-policy TD algorithm that combines the ideas of Monte Carlo updates and TD updates,
 and can be express in pseudo-code as follows:
 
 \begin{verbatim}
@@ -128,17 +128,17 @@ Repeat (for each episode):
 \end{verbatim}
 
 The required implementation of Sarsa-$\lambda$ used to solve the Taxi task, in the student.py file are:
-
-calculate the TD error:
+\\
+Calculate the TD error:
 \begin{verbatim}
 delta = reward + self.gamma * self.Q[next_state][next_action] - self.Q[state][action]
 \end{verbatim}
 
 here the temporal difference error is calculated using the Q function as the difference between
 the reward and the discounted value of the next state-action pair,
-choosen according to the current policy
-
-update the eligibility trace:
+choosen according to the current policy.
+\\
+Update the eligibility trace:
 \begin{verbatim}
 self.E[state][action] += 1
 \end{verbatim}
@@ -152,10 +152,10 @@ and indicating a higher importance of the state-action pair.
 
 %write a small description of the mountain car problem and explain why the state space is continuous and why the action space is discrete.
 The goal of the agent in the mountain car problem is to reach the flag on the right side of the environment.
-The agent can move in 3 directions (left, right, stay) so the action space in discret,
+The agent can perform 3 actions (left, right, none) so the action space in discret,
 and can move in the x and y direction.
 The state space in the problem is continuous, this can lead to a large number of states,
-so it is only solvable using discretization techniques o function approximation.
+so it is only solvable using discretization techniques or function approximation.
 In practice the algorithm builds an approximation of the Q function using a set of weights,
 in this case with linear value function approximation (LVFA) and radial basis function (RBF) encoder.
 In this case the RBF encoder is used to encode the state space into a feature space and 
@@ -305,8 +305,8 @@ and finally the state is encoded using the RBF encoder in the \texttt{encode} fu
 this function returns the encoded state features that are then used to calculate the TD error as a matrix
 of dimension 1x400, where 400 is the sum of the number of components of the 4 RBF encoders.
 
-\section{Students i collaborate with}
-I collaborated with the following students:
+\section{Collaborations}
+I collaborated with the students:
 \begin{itemize}
   \item Dario Loi 1940849
   \item Gabriele Scognamiglio 1933066
