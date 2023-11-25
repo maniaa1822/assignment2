@@ -169,7 +169,7 @@
         "kind": 6,
         "importPath": "rbf.student",
         "description": "rbf.student",
-        "peekOfCode": "class TDLambda_LVFA:\n    def __init__(self, env, feature_encoder_cls=RBFFeatureEncoder, alpha=0.01, alpha_decay=1, \n                 gamma=0.9999, epsilon=0.3, epsilon_decay=0.995, final_epsilon=0.05, lambda_=0.9): # modify if you want (e.g. for forward view)\n        self.env = env\n        self.feature_encoder = feature_encoder_cls(env)\n        self.shape = (self.env.action_space.n, self.feature_encoder.size)\n        self.weights = np.random.random(self.shape)*0.01 #weights is a np array of size (n_actions, n_features) 3x100\n        self.traces = np.zeros(self.shape) #trace is a np array of size (n_actions, n_features) 3x100\n        self.alpha = alpha\n        self.alpha_decay = alpha_decay",
+        "peekOfCode": "class TDLambda_LVFA:\n    def __init__(self, env, feature_encoder_cls=RBFFeatureEncoder, alpha=0.01, alpha_decay=1, \n                 gamma=0.9999, epsilon=0.3, epsilon_decay=0.995, final_epsilon=0.05, lambda_=0.9): # modify if you want (e.g. for forward view)\n        self.env = env\n        self.feature_encoder = feature_encoder_cls(env)\n        self.shape = (self.env.action_space.n, self.feature_encoder.size)\n        self.weights = np.random.random(self.shape)*0.01 \n        self.traces = np.zeros(self.shape) \n        self.alpha = alpha\n        self.alpha_decay = alpha_decay",
         "detail": "rbf.student",
         "documentation": {}
     },

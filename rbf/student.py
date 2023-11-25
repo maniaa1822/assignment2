@@ -65,8 +65,8 @@ class TDLambda_LVFA:
         self.env = env
         self.feature_encoder = feature_encoder_cls(env)
         self.shape = (self.env.action_space.n, self.feature_encoder.size)
-        self.weights = np.random.random(self.shape)*0.01 #weights is a np array of size (n_actions, n_features) 3x100
-        self.traces = np.zeros(self.shape) #trace is a np array of size (n_actions, n_features) 3x100
+        self.weights = np.random.random(self.shape)*0.01 
+        self.traces = np.zeros(self.shape) 
         self.alpha = alpha
         self.alpha_decay = alpha_decay
         self.gamma = gamma
@@ -81,8 +81,8 @@ class TDLambda_LVFA:
         return self.weights@feats
     
     def update_transition_backwards(self, s, a, s_prime, reward, done): # modify
-        s_feats = self.feature_encoder.encode(s) #array of size (n_features, 1) 100x1
-        s_prime_feats = self.feature_encoder.encode(s_prime) #array of size (n_features, 1) 100x1
+        s_feats = self.feature_encoder.encode(s)
+        s_prime_feats = self.feature_encoder.encode(s_prime) 
         # TODO  update the weights for the current state
         #calculate delta td error
         delta = reward + self.gamma*self.Q(s_prime_feats).max() - self.Q(s_feats)[a]
@@ -97,9 +97,9 @@ class TDLambda_LVFA:
     
     
     
-    def update_transition_forwards(self, s, action, s_prime, reward, done): # modify
-        s_feats = self.feature_encoder.encode(s) #array of size (n_features, 1) 100x1
-        s_prime_feats = self.feature_encoder.encode(s_prime) #array of size (n_features, 1) 100x1
+    def update_transition_forwards(self, s, action, s_prime, reward, done): # modify #to test
+        s_feats = self.feature_encoder.encode(s)
+        s_prime_feats = self.feature_encoder.encode(s_prime) 
         self.episode.append((s_feats, action, reward,))
         
         if done:
